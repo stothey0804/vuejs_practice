@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="kr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Component</title>
+    <!-- development version, includes helpful console warnings -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+<body>
+    <div id="app">
+        <ol>
+            <!-- todo-item 컴포넌트의 인스턴스 만들기 -->
+            <!-- todo 객체를 제공하기 위해 bind를 설정, key 제공필요 -->
+            <todo-item
+                v-for="item in list"
+                v-bind:todo="item"
+                v-bind:key="item.id"
+            ></todo-item>
+        </ol>
+    </div>
+</body>
+<script>
+    // 애플리케이션 구축시 인터페이스의 단위, 트리형체로 추상화할 수 있다.
+    // todo-item 이름을 가진 컴포넌트 정의
+    Vue.component('todo-item', {
+        // prop : 사용자 정의 속성
+        props: ['todo'],
+        template: '<li>{{todo.text}}</li>'
+    })
+
+    let app = new Vue({
+        el: '#app',
+        data: {
+            list: [
+                { id: 0, text: 'Vegetables'},
+                { id: 1, text: 'Cheese'},
+                { id: 2, text: 'Whatever else humans are supposed to eat'}
+            ]
+        }
+    })
+</script>
+</html>

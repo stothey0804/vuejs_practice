@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Syntax</title>
+    <!-- development version, includes helpful console warnings -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+<body>
+    <div id="app">
+        <!-- Mustache 구문이용 텍스트 보간 -->
+        <p>{{msg}}</p>
+        <p v-once>이 영역은 변경이 적용되지 않습니다: {{msg}}</p>
+        <br />
+
+        <p>Using mutaches: {{rawHtml}}</p>
+        <!-- span 의 내용은 rawHtml로 대체되며 데이터 바인딩은 무시됨. -->
+        <!-- xss 취약점으로 이어질 수 있으므로 사용자가 제공한 콘텐츠에서는 사용하지 말 것. -->
+        <!-- (있는 정도만 알고 넘어가는게 좋을 듯) -->
+        <p>Using v-html directive: <span v-html="rawHtml"></span></p>
+
+        <!-- Mustaches는 HTML 속성에서 사용할 수 없다. v-bind 디렉티브 사용~ -->
+        <!-- <div id="{{dynamicId}}"></div> // 적용되지 않음.-->
+        <div v-bind:id="dynamicId"></div>
+        <!-- bind 값이 boolean일 경우, null, undefined, false 이면 속성이 포함되지 않음. -->
+        <button v-bind:disabled="isButtonDisabled">Button</button>
+        <br />
+
+        <!-- js 표현식 -->
+        <div>
+            <p>{{ number + 1 }}</p>
+            <p>{{ ok? 'Yes': 'No'}}</p>
+            <p>{{ msg.split('').reverse().join('') }}</p>
+            <p v-bind:id="`list-${number}`"></p>
+            <!-- [주의] 단일 표현식만 포함되므로 변수 선언 및 할당, 조건문 등은 작성하지 말 것. -->
+        </div><br/>
+    </div>
+
+    <div id="directive">
+         <!-- Directives -->
+         <!-- v- 접두사가 있는 특수 속성, 속성값은 단일 js 표현식이며 v-for은 예외. -->
+         <!-- 디렉티브는 표현식의 값이 변경될 때 DOM에 적용하는 역할을 한다. -->
+         <!-- 일부 디렉티브는 콜론으로 표시되는 Arguments 를 사용할 수 있다. (bind) -->
+        <a v-bind:href="url"><p v-if="seen">Watching me!</p></a>
+        <a v-on:click="doSomething">do something~</a>
+        <!-- 콜론 이후의 속성도 []를 이용하여 동적으로 전달할 수 있는데, 제약이 좀 있어서 필요할때 공식문서참고 -->
+        <br />
+
+        <!-- v-bind, v-on의 약어 :, @ -->
+        <a :href="url"><p>Watching me!</p></a>
+        <a @click="doSomething">do something~</a>
+    
+    </div>
+</body>
+<script>
+    let app = new Vue({
+        el: '#app',
+        data: {
+            msg : 'Hello',
+            rawHtml: '<span style="color:red">This should be red.</span>',
+            dynamicId: 'myId',
+            isButtonDisabled: true,
+            number : 1,
+            ok: true,
+        }
+    });
+
+    let directive = new Vue({
+        el: '#directive',
+        data: {
+            seen: true,
+            url: 'http://stothey0804.github.io'
+        },
+        methods: {
+            doSomething: function(){
+                console.log('do something...');
+            }
+        }
+    });
+</script>
+</html>

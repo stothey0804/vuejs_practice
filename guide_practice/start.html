@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="kr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Start</title>
+    <!-- development version, includes helpful console warnings -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+<body>
+    <div id="app">
+        {{message}}
+    </div>
+    <div id="app-2">
+        <span v-bind:title="message">
+            마우스를 올리면 동적으로 바인딩 된 title을 확인할 수 있다.
+        </span>
+    </div>
+    <div id="app-3">
+        <p v-if="seen">v-if가 true이면 볼 수 있다.</p>
+    </div>
+    <div id="app-4">
+        <select>
+            <option v-for="i in todos">{{i.text}}</option>
+        </select>
+    </div>
+    <div id="app-5">
+        <p>{{message}}</p>
+        <button v-on:click="reverseMessage">reverse message</button>
+    </div>
+    <div id="app-6">
+        <p>{{message}}</p>
+        <input v-model="message">
+    </div>
+</body>
+<script>
+    let app = new Vue({
+        el: '#app',
+        data: {
+            message: 'Hello Vue!' // 선언적 렌더링
+            // console 에서 app.message 에 다른 값을 할당하면 업데이트 된다. 
+        }
+    });
+    let app2 = new Vue({
+        el: '#app-2',
+        data: {
+            message: `이 페이지는 ${new Date()} 에 로드 되었습니다.`
+            // v-bind 속성은 디렉티브라고하며, v- 접두어가 붙어 렌더링된 DOM에 반응하여 동작한다.
+        }
+    });
+    let app3 = new Vue({
+        el: '#app-3',
+        data: {
+            seen: true
+        }
+    });
+    let app4 = new Vue({
+        el: '#app-4',
+        data: {
+            todos: [
+                { text: 'Javascript' },
+                { text: 'Vue' },
+                { text: 'Ruby' },
+                { text: 'rails' }
+            ]
+            // app4.todos.push({ text: 'New item' }) 입력 시 항목 동적 추가 
+        }
+    });
+    let app5 = new Vue({
+        el: '#app-5',
+        data: {
+            message: 'Hello, Vue.js!'
+        },
+        methods: {
+            reverseMessage: function () {
+                this.message = this.message.split('').reverse().join('')
+            }
+        }
+    });
+    let app6 = new Vue({
+        el: '#app-6',
+        data: {
+            message: 'Hello Vue!'
+        }
+    });
+</script>
+</html>
