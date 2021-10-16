@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="kr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class and Style Binding</title>
+    <!-- development version, includes helpful console warnings -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <style>
+        div.active {
+            background: yellow;
+        }
+        div.static{
+            position: static;
+        }
+        div.text-danger{
+            font-weight: 500;
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>클래스와 스타일 바인딩</h1>
+    <p>데이터 바인딩은 엘리먼트의 클래스 목록과 인라인 스타일을 조작하기 위해 사용된다.</p>
+    <p></p>
+    <div id="classBinding">
+        <h2>HTML 클래스 바인딩하기</h2>
+        <h3>객체 구문</h3>
+        <p>v-bind:class 디렉티브는 일반 class 속성과 공존이 가능하다.</p>
+        <p>&lt;div class="static active"&gt;&lt;p&gt;active 클래스 추가&lt;/p&gt;&lt;/div&gt;</p>
+        <div class="static" :class="{ active: isActive, 'text-danger': hasError }">
+            <p>active 클래스 추가</p>
+        </div>
+        <div :class="classObject">
+            <p>바인딩 된 객체는 인라인이 아니어도 된다.</p>
+        </div>
+        <div :class="computedClassObject">
+            <p>computed 속성에도 바인딩할 수 있다.</p>
+        </div>
+        <div :class="[activeClass, errorClass]">
+            <p>클래스 목록에 배열을 전달할 수 있다.</p>
+        </div>
+        <!-- <div :class="[isActive? activeClass: '', errorClass]"> -->
+        <div :class="[{active: isActive}, errorClass]">
+            <p>삼항연산자를 이용할 수 있다.</p>
+            <p>그러나 여러조건이 있을 때는 장황해지므로 배열 구문 내에서 객체 구문을 사용한다.</p>
+        </div>
+    </div>
+    <hr />
+    <div id="inlineBinding">
+        <h2>인라인 스타일 바인딩</h2>
+    </div>
+</body>
+<script>
+    let classBinding = new Vue({
+        el: '#classBinding',
+        data: {
+            activeClass: 'active',
+            errorClass: 'text-danger',
+            
+            //
+            isActive: true,
+            hasError: false,
+            error: null,
+            classObject: {
+                active: true,
+                'text-danger': false
+            }
+        },
+        computed: {
+            computedClassObject: function(){
+                return {
+                    active: this.isActive && !this.error,
+                    'text-danger': this.error
+                }
+            }
+        }
+    });
+</script>
+</html>
