@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="kr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conditional</title>
+    <!-- development version, includes helpful console warnings -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+<body>
+    <div id="conditional">
+        <h1 v-if="awesome">Vue is awesome!</h1>
+        <h1 v-else>No...</h1>
+        <p>위 제목은 awesome이 true일 때 렌더링 된다.</p>
+        <p>v-else 를 사용하여 else 블록을 추가할 수 있다.</p>
+        <br>
+        <h3>template에 v-if를 갖는 조건부 그룹 만들기</h3>
+        <p>하나 이상의 엘리먼트를 트랜지션 하기 위해서 template 엘리먼트를 레퍼로 사용한다. (template는 렌더링 결과에 포함되지 않음.)</p>
+        <template v-if="ok">
+            <h1>Title</h1>
+            <p>Paragraph 1</p>
+            <p>Paragraph 2</p>
+        </template>
+        <br>
+        <h3>v-else와 v-else-if</h3>
+        <p>v-if -> v-else-if -> v-else 엘리먼트 순서대로 위치해야 인식한다.</p>
+        <div v-if="type === 'A'">A</div>
+        <div v-else-if="type === 'B'">B</div>
+        <div v-else-if="type === 'C'">C</div>
+        <div v-else>F</div>
+        <br>
+        <h3>key를 이용한 재사용 가능한 element 제어</h3>
+        <template v-if="loginType === 'username'">
+            <label>사용자 이름</label>
+            <input placeholder="아이디를 입력하세요" key="username-input">
+        </template>
+        <template v-else>
+            <label>사용자 이메일</label>
+            <input placeholder="이메일을 입력하세요" key="email-input">
+        </template>
+        <button @click="changeLoginType()">로그인 유형 변경</button>
+        <p>key를 지정하지 않으면 이미 입력된 input 은 대체되지않기 때문에, element가 별개인 것을 명시하기 위해 key 속성을 추가한다.</p>
+        <br>
+        <div :style="{color: fontColor}">
+            <h2>v-if와 v-show의 차이</h2>
+            <p v-show="ok">* v-show 표시</p>
+            <p>v-if 는 참일 때만 렌더링하며 v-show는 항상 렌더링 되어있는 상태</p>
+            <p>false일때 인라인 display:none 스타일 =이 추가된다.</p>
+            <p>렌더링을 자주하는 영역이면 사용하도록 한다.</p>
+        </div>
+    </div>
+
+</body>
+<script>
+    let vm = new Vue({
+        el: '#conditional',
+        data: {
+            awesome: true,
+            ok: true,
+            type: 'A',
+            loginType: 'username',
+            fontColor: 'red'
+        },
+        methods: {
+            changeLoginType: function(){
+                this.loginType = (this.loginType==='username')? 'email': 'username'
+            }
+        }
+    })
+</script>
+</html>
