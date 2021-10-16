@@ -50,9 +50,39 @@
     <hr />
     <div id="inlineBinding">
         <h2>인라인 스타일 바인딩</h2>
+        <p>v-bind:style 구문은 css처럼 보이지만 Javascript 객체다. </p>
+        <div :style="{color: activeColor, fontSize: fontSize+'px' }">
+            <p>인라인 스타일 바인딩~</p>
+        </div>
+        <div :style="styleObject">
+            <p>객체에 직접 인라인 스타일 바인딩~</p>
+        </div>
+        <div :style="[baseStyles, overrrdingStyles]">
+            <p>배열구문 사용하기</p>
+        </div>
     </div>
 </body>
 <script>
+    let inlineBinding = new Vue({
+        el: '#inlineBinding',
+        data: {
+            activeColor: 'red',
+            fontSize: 30,
+            // 객체로 바인딩
+            styleObject: {
+                color: 'blue',
+                fontSize: '13px'
+            },
+            baseStyles: {
+                color: 'red',
+                fontSize: '24px'
+            },
+            overrrdingStyles: {
+                color: 'green',
+                fontWeight: '700'
+            }
+        }
+    });
     let classBinding = new Vue({
         el: '#classBinding',
         data: {
