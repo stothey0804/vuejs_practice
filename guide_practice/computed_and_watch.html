@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="kr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computed and Watch</title>
+    <!-- development version, includes helpful console warnings -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+<body>
+    <div id="example">
+        <h2>Computed 속성</h2>
+        <h3>Computed 예제와 캐싱, 메소드</h3>
+        <h4>* 템플릿 내에 표현식을 넣는 경우, 유지보수에 좋지 않다.</h4>
+        <p>{{ message.split('').reverse().join('') }}</p>
+
+        <h4>이 때, computed 속성을 사용하면 복잡한 로직을 간단하고 명료하게 표현할 수 있다.</h4>
+        <p>{{ reversedMessage }}</p>
+        
+        <h4>메소드를 사용해도 같은 결과를 얻을 수 있다. - 캐싱되지 않음</h4>
+        <p>{{ reversedMessageMethod() }}</p>
+        <br>
+
+        <h3>Computed vs Watch</h3>
+        <p>watch 속성은 인스턴스 데이터 변경을 관찰하고 반응한다. 명령형 프로그래밍 방식인 watch 보다 선언형 프로그래밍 방식인 computed 속성을 사용하는 것이 더 좋다.</p>
+        <p>참고: <a :href='url' target="_blank">Imperative vs Declarative Programming</a></p>
+        <br>
+        <p>{{ watchfullName }}</p>
+        <p>{{ getFullName }}</p>
+        <br>
+
+        <h3>Computed 속성의 setter 함수</h3>
+        <p>computed 속성은 기본적으로 geeter 함수만 가지고 있지만, 필요한 경우 setter함수를 만들어 쓸 수 있다.</p>
+        <p>{{ fullName }}</p>
+        <p>vm.fullName = 'fisrtName lastName' 할당 시 setter 실행</p>
+        <br>
+    </div>
+    <hr />
+    <div id="watch">
+        <h2>Watch 속성</h2>
+        <p>대부분 computed 속성이 적합하지만 데이터 변경에 비동기식 또는 시간이 많이 소요되는 조작을 수행할 때 유용하다.</p>
+        <br>
+        <p>yes/no 질문을 물어보세요: <input v-model="question"/></p>
+        <p>{{ answer }}</p>
+    </div>
+</body>
+<script src="https://unpkg.com/axios@0.12.0/dist/axios.min.js"></script>
+<script src="https://unpkg.com/lodash@4.13.1/lodash.min.js"></script>
+<script>
+    let vm2 = new Vue({
+        el: '#watch',
+        data: {
+            question: '',
+            answer: '질문을 하기 전까지는 대답할 수 없습니다.',
+        },
+        watch: {
+            // 질문이 변경될 때마다 실행
+            question: function(newQuestion){
+                this.answer = '입력 대기중...';
+                this.debouncedGetAnswer();
+            }
+        },
+        created: function(){
+            // ._debounce는 lodash가 제공하는 기능으로 시간이 많이 소요되는 작업을 실행할 수 있는 빈도를 제한
+            // 자세한 내용을 보려면 https://lodash.com/docs#debounce
+            this.debouncedGetAnswer = _.debounce(this.getAnswer, 500);
+        },
+        methods: {
+            getAnswer: function(){
+                if(this.question.indexOf('?') === -1){
+                    this.answer = '질문에는 물음표를 포함시켜야합니다.';
+                    return;
+                }
+                this.answer = '생각중...';
+                let vm = this;
+                axios.get('https://yesno.wtf/api')
+                .then(function (response) {
+                    vm.answer = _.capitalize(response.data.answer);
+                })
+                .catch(function (error) {
+                    vm.answer = '에러! API 요청에 오류가 있습니다. ' + error;
+                });
+            }
+        }
+    });
+
+    let vm = new Vue({
+        el: '#example',
+        data: {
+            message: 'Hello Vue js!',
+            url: 'https://ui.dev/imperative-vs-declarative-programming/',
+            firstName: 'Foo',
+            lastName: 'Bar',
+            watchfullName: 'Foo Bar'
+        },
+        methods: {
+            // 메소드를 사용하는 경우, 렌더링을 다시할 때마다 항상 함수를 호출한다.
+            // 캐싱을 하지 않을 경우에 사용
+            reversedMessageMethod: function(){
+                return this.message.split('').reverse().join('');
+            }
+        },
+        computed: {
+            // 계산된 getter, 항상 vm.message 의 값에 의존한다.
+            // computed 속성도 데이터 바인딩을 할 수 있다.
+            reversedMessage: function(){
+                return this.message.split('').reverse().join('');
+            },
+            // [중요] 종속 대상을 따라 캐싱된다. (변경되지 않는 한 다시 계산하지 않는다.)
+            // 아래 예는 아무 곳에도 의존하지 않기 때문에 업데이트 되지 않는다.
+            now: function(){
+                return Date.now();
+            },
+            getFullName: function(){
+                return `${this.firstName} ${this.lastName}`;
+            },
+            // getter and setter
+            fullName: {
+                // getter
+                get: function(){
+                    return `${this.firstName} ${this.lastName}`;
+                },
+                // setter
+                set: function(newVal){
+                    let names = newVal.split(' ');
+                    this.firstName = names[0];
+                    this.lastName = names[names.length - 1];
+                }
+            }
+        },
+        watch: {
+            firstName: function(val){
+                this.watchfullName = `${val} ${this.lastName}`
+            },
+            lastName: function(val){
+                this.watchfullName = `${this.firstName} ${val}`
+            }
+        },
+        // created: function(){
+        //     console.log(`created : ${this.reversedMessage}`);
+        //     console.log(`created : ${this.now}`);
+        // },
+        // updated: function(){
+        //     console.log(`updated : ${this.reversedMessage}`);
+        //     console.log(`updated : ${this.now}`);
+        // }
+    });
+</script>
+</html>
